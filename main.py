@@ -32,11 +32,29 @@ class OptimizationMethods:
     def nesterov_momentum(self, x, y, step):
         gradient = calculate_gradient(x, y, step)
 
-    def ada_grad(self, x, y, step):
+    def adagrad(self, x, y, step):
         gradient = calculate_gradient(x, y, step)
+        iterations = 0
+        sqr_gradient = [gradient[0] ** 2, gradient[1] ** 2]
+        while self.max_iters > iterations or np.sqrt(gradient[0] ** 2 + gradient[1] ** 2) > self.precision:
+            x -= step * gradient[0] / np.sqrt(sqr_gradient[0] + self.precision)
+            y -= step * gradient[1] / np.sqrt(sqr_gradient[1] + self.precision)
+            gradient = calculate_gradient(x, y, step)
+            sqr_gradient[0] += gradient[0] ** 2
+            sqr_gradient[1] += gradient[1] ** 2
+            iterations += 1
 
     def rms_prop(self, x, y, step):
         gradient = calculate_gradient(x, y, step)
+        iterations = 0
+        sqr_gradient = [gradient[0] ** 2, gradient[1] ** 2]
+        while self.max_iters > iterations or np.sqrt(gradient[0] ** 2 + gradient[1] ** 2) > self.precision:
+            x -= step * gradient[0] / np.sqrt(sqr_gradient[0] + self.precision)
+            y -= step * gradient[1] / np.sqrt(sqr_gradient[1] + self.precision)
+            gradient = calculate_gradient(x, y, step)
+            sqr_gradient[0] = 0.9 * sqr_gradient[0] ** 2 + 0.1 * gradient[0] ** 2
+            sqr_gradient[1] = 0.9 * sqr_gradient[1] ** 2 + 0.1 * gradient[1] ** 2
+            iterations += 1
 
     def adam(self, x, y, step):
         gradient = calculate_gradient(x, y, step)
